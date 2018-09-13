@@ -7,7 +7,7 @@ public class GenTxt {
 
     public static void main(String[] args) throws IOException {
         String pathname = "C:\\Users\\WW\\Google Drive\\!!Fall 2018\\COMP 6521 Advanced " +
-                "database\\Project1\\TestData\\data.txt";
+                "database\\Project1\\TestData\\data6.txt";
         File filename = new File(pathname);
         filename.createNewFile();
         BufferedWriter out = new BufferedWriter(new FileWriter(filename));
