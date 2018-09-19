@@ -3,11 +3,12 @@ import java.util.Random;
 
 public class GenTxt {
 
-    final static int numberToBeGen = 999999;
+    final static int numberToBeGen = 1000000;
 
     public static void main(String[] args) throws IOException {
-        String pathname = "C:\\Users\\WW\\Google Drive\\!!Fall 2018\\COMP 6521 Advanced " +
-                "database\\Project1\\TestData\\data6.txt";
+        String pathname = "C:\\Users\\WW\\Desktop\\Google Drive\\!!Fall 2018\\COMP 6521 Advanced " +
+                "database\\Project1\\TestData\\data.txt";
+        //String pathname = "d:\\data.txt";
         File filename = new File(pathname);
         filename.createNewFile();
         BufferedWriter out = new BufferedWriter(new FileWriter(filename));
@@ -26,8 +27,10 @@ public class GenTxt {
             int length = (int) Math.log10(numToGen);
 
             for(int i = 0 ; i < numToGen; i++){
-                int ranNumber = (int) (rand.nextInt((int) (numToGen - Math.pow(10, length)))
-                        + Math.pow(10,length));
+                int ranNumber = (int) rand.nextInt((int) Math.pow(10, length));
+
+                //int ranNumber = (int) (rand.nextInt((int) (numToGen - Math.pow(10, length)))
+                       // + Math.pow(10,length));
                 out.write(ranNumber + " ");
                 out.flush();
             }
