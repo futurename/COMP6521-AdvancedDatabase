@@ -11,6 +11,7 @@ public class PhaseOne {
 	static int phaseOneFileNum;
 	static int avgCountInPhaseOneFile;
 	static int lastCountInPhaseOneFile;
+	static int sortedNumCounter = 0;
 
 	static void readAndSortNumbers(String filename, int bfMemSize) throws Exception {
 		int numOfInt = bfMemSize / 4 == 0 ? bfMemSize / 4 : bfMemSize / 4 - 1;
@@ -18,14 +19,14 @@ public class PhaseOne {
 		//System.out.println("memsize: " + bfMemSize + " , unit: " + numOfInt);
 
 		FileReader fReader = new FileReader(new File(filename));
-		BufferedReader br = new BufferedReader(fReader);		
-		String[] headers = br.readLine().split("\\s+");
+		BufferedReader bReader = new BufferedReader(fReader);		
+		String[] headers = bReader.readLine().split("\\s+");
 		int totalNumbers = Integer.parseInt(headers[0]);
 		avgCountInPhaseOneFile = numOfInt;
-		lastCountInPhaseOneFile = totalNumbers % numOfInt;
+		lastCountInPhaseOneFile = totalNumbers % numOfInt;		
 		MultiwaySortMain.totalNumberValue = totalNumbers;
 		System.out.println("init total numbers: " + totalNumbers + " , Memeory restriction: " + headers[1]);		
-		br.readLine();
+		bReader.readLine();
 
 		int curPos = 0;
 		char curCh;
@@ -33,24 +34,31 @@ public class PhaseOne {
 		int bufferCount = 0;
 		int fileNumCounter = 0;
 
-		while ((curPos = br.read()) != -1 ) {
+		while ((curPos = bReader.read()) != -1 ) {
 			curCh = (char) curPos;
 			if (curCh != '\t') {
 				curNumString += curCh;
 			} else {				
-				buffer[bufferCount++] = Integer.parseInt(curNumString);
-				totalNumbers--;
-				//System.out.println("total number left: " + totalNumbers);
+				buffer[bufferCount++] = Integer.parseInt(curNumString);			
 				curNumString = "";
-				if ((bufferCount == numOfInt - 1) ) {
+				if ((bufferCount == numOfInt) ) {
 					String filePrefix = phaseOneFilePrefix + fileNumCounter;
 					fileNumCounter++;
-					DataSort.sort(buffer, 0, bufferCount);
+					DataSort.sort(buffer, 0, bufferCount - 1);
 					writeBufferToFile(buffer, filePrefix);
+					sortedNumCounter += bufferCount;
+					//System.out.println("output numbers: " + bufferCount);
 					bufferCount = 0;
 				}				
 			}			
 		}
+		String filePrefix = phaseOneFilePrefix + fileNumCounter;
+		fileNumCounter++;
+		DataSort.sort(buffer,0,bufferCount-1);
+		writeBufferToFile(buffer, filePrefix);		
+		sortedNumCounter += bufferCount;		
+		System.out.println("total sorted nums in Phase one: " + sortedNumCounter);
+		bReader.close();
 		phaseOneFileNum = fileNumCounter;
 	}
 
@@ -58,7 +66,7 @@ public class PhaseOne {
 		String fileName = MultiwaySortMain.DEFAULT_TEMP_DATA_DIR + filePrefix + ".txt";
 		BufferedWriter bfWriter = new BufferedWriter(new FileWriter(new File(fileName)));
 		for (int i : buffer) {
-			bfWriter.write(i + " ");
+			bfWriter.write(i + "\t");				
 		}
 		bfWriter.close();
 	}

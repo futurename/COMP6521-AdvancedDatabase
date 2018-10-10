@@ -1,16 +1,15 @@
-import java.awt.image.DataBuffer;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import com.sun.org.apache.xerces.internal.xinclude.MultipleScopeNamespaceSupport;
+import com.sun.swing.internal.plaf.metal.resources.metal_zh_TW;
+
+import jdk.internal.dynalink.beans.StaticClass;
 
 public class PhaseTwo {
-
 	static int dataBufNum = 5;
 	static int totalFreeMemUnits = getFreeMemUnits();
 	static int outputBufUnits = totalFreeMemUnits / 3;
@@ -29,42 +28,47 @@ public class PhaseTwo {
 		int finalOutputFileNum = totalFileNum;
 
 		while (finalOutputFileNum > 1) {
-			int[] numInFileCounterArray = new int[finalOutputFileNum];
-			for (int i = 0; i < finalOutputFileNum - 1; i++) {
-				numInFileCounterArray[i] = avgNumInFile;
-			}
-			numInFileCounterArray[finalOutputFileNum - 1] = lastNumInFile;
 
 			int standItrTimes = finalOutputFileNum / dataBufNum;
+			System.out.println("standard itr time: " + standItrTimes);
 			int leftFileNum = finalOutputFileNum % dataBufNum;
-			// System.out.println("left file" + leftFileNum);
-			if (leftFileNum != 0) {
-				for (int i = 0; i < standItrTimes; i++) {
-					initReadFile(fileName, dataBufNum, dataBufUnitSize, numInFileCounterArray);
-					outputFileCounter++;
+			System.out.println("left file num: " + leftFileNum);
+
+			for (int i = 0; i < standItrTimes; i++) {
+				int[] numInFileCounterArray = new int[dataBufNum];
+				for (int j = 0; j < dataBufNum - 1; j++) {
+					numInFileCounterArray[i] = avgNumInFile;
 				}
-				
-				numInFileCounterArray = new int[leftFileNum];
+				int[] sortedNumFromFileCounterArray = new int[dataBufNum];
+				System.out.println("total num need be sorted: " + (dataBufNum * avgNumInFile));
+				initReadFile(fileName, dataBufNum, dataBufUnitSize, numInFileCounterArray,
+						sortedNumFromFileCounterArray);
+				outputFileCounter++;
+			}
+			if (leftFileNum != 0) {
+				int[] numInFileCounterArray = new int[leftFileNum];
 				for (int i = 0; i < leftFileNum - 1; i++) {
 					numInFileCounterArray[i] = avgNumInFile;
 				}
 				numInFileCounterArray[leftFileNum - 1] = lastNumInFile;
-
+				int[] sortedNumFromFileCounterArray = new int[leftFileNum];
 				int specDataBufUnitSize = dataBufUnitSize * dataBufNum / leftFileNum;
-				initReadFile(fileName, leftFileNum, specDataBufUnitSize, numInFileCounterArray);
-				fileName = phaseTwoFilename;
-				phaseTwoFilename += "x_";
-				finalOutputFileNum = outputFileCounter + 1;
-				inputFileCounter = 0;
-				outputFileCounter = 0;
-				avgNumInFile = avgNumInFile * dataBufNum;
-				lastNumInFile = avgNumInFile * (leftFileNum - 1) + lastNumInFile;
+				initReadFile(fileName, leftFileNum, specDataBufUnitSize, numInFileCounterArray,
+						sortedNumFromFileCounterArray);
+				outputFileCounter++;
 			}
+			fileName = phaseTwoFilename;
+			phaseTwoFilename += "x_";
+			finalOutputFileNum = outputFileCounter;
+			inputFileCounter = 0;
+			outputFileCounter = 0;
+			avgNumInFile = avgNumInFile * dataBufNum;
+			lastNumInFile = avgNumInFile * (leftFileNum - 1) + lastNumInFile;
 		}
 	}
 
-	static void initReadFile(String filePrefix, int dataBufNum, int dataBufUnitSize, int[] numInFileCounterArray)
-			throws IOException {
+	static void initReadFile(String filePrefix, int dataBufNum, int dataBufUnitSize, int[] numInFileCounterArray,
+			int[] sortedNumCounterArray) throws IOException {
 		int[][] dataBuffer = new int[dataBufNum][dataBufUnitSize];
 
 		File[] files = new File[dataBufNum];
@@ -73,43 +77,42 @@ public class PhaseTwo {
 
 		for (int i = 0; i < dataBufNum; i++) {
 			String curFilename = fileName + inputFileCounter + SUFFIX;
-			System.out.println("Read from file " + curFilename);
 			files[i] = new File(curFilename);
 			fileFRs[i] = new FileReader(files[i]);
 			fileBRs[i] = new BufferedReader(fileFRs[i]);
-
+			System.out.println("Read from file " + curFilename);
 			for (int j = 0; j < dataBufUnitSize; j++) {
 				dataBuffer[i][j] = readOneNum(fileBRs[i]);
+				// System.out.println("reading i: " + i + " , j:" + j);
 			}
-
 			inputFileCounter++;
 		}
-		sortAndMerge(fileBRs, dataBufNum, dataBufUnitSize, dataBuffer, numInFileCounterArray);
+		sortAndMerge(fileBRs, dataBufNum, dataBufUnitSize, dataBuffer, numInFileCounterArray, sortedNumCounterArray);
+
 	}
 
 	static void sortAndMerge(BufferedReader[] fileBRs, int dataBufNum, int dataBufSize, int[][] dataBuffer,
-			int[] numInFileCounterArray) throws IOException {
+			int[] numInFileCounterArray, int[] sortedNumCounter) throws IOException {
 		int[] bufCurPosPointers = new int[dataBufNum];
 		int[] outputBuffer = new int[outputBufUnits];
 		int outputBufCounter = 0;
 		boolean isAllSorted = false;
 
 		while (!isAllSorted) {
-			int curMin = getMinNumPos(dataBuffer, bufCurPosPointers, fileBRs, numInFileCounterArray);
+			int curMin = getMinNumPos(dataBuffer, bufCurPosPointers, fileBRs, numInFileCounterArray, sortedNumCounter);
 			if (curMin != -1) {
 				outputBuffer[outputBufCounter++] = curMin;
-
 				if (outputBufCounter == outputBufUnits) {
 					String outputFilename = phaseTwoFilename + outputFileCounter;
 					totalSortedNum += outputBufCounter;
-					System.out.println("totalsortednum written to file: " + totalSortedNum);
+					System.out.println("totalsortednum written to file(full): " + totalSortedNum);
 					writeToFile(outputFilename, outputBuffer);
 					outputBufCounter = 0;
 				}
 			} else {
 				String outputFilename = phaseTwoFilename + outputFileCounter;
 				totalSortedNum += outputBufCounter;
-				System.out.println("totalsortednum written to file: " + totalSortedNum);
+				System.out.println("totalsortednum written to file(unfull): " + totalSortedNum);
 				writeToFile(outputFilename, outputBuffer);
 				outputBufCounter = 0;
 				isAllSorted = true;
@@ -119,29 +122,28 @@ public class PhaseTwo {
 
 	static void writeToFile(String outputFilename, int[] outputBufdata) throws IOException {
 		String curOutputFilename = outputFilename + SUFFIX;
-		System.out.println("-------------------------------------------output file: " + curOutputFilename);
+		System.out.println("-----------------output file: " + curOutputFilename);
 		File fw = new File(curOutputFilename);
 		FileWriter fWriter = new FileWriter(fw, true);
 		BufferedWriter bWriter = new BufferedWriter(fWriter);
-		System.out.println("last element : -------->" + outputBufdata[outputBufdata.length - 1]);
+		// System.out.println("last element : -------->" +
+		// outputBufdata[outputBufdata.length - 1]);
 		for (int i : outputBufdata) {
-			if (i != 0) {
-				bWriter.write( i + " " );
-			}
-		}		 
+			bWriter.write(i + "\t");
+		}
 	}
 
 	static int getMinNumPos(int[][] dataBuffer, int[] bufCurPosPointers, BufferedReader[] fileBRs,
-			int[] numInFileCounterArray) throws IOException {
+			int[] numInFileCounterArray, int[] sortedNumFromFileCounter) throws IOException {
+		int dataUnitSize = dataBuffer.length;
+		int[] firstNums = new int[dataUnitSize];
 
-		int[] firstNums = new int[bufCurPosPointers.length];
-
-		for (int i = 0; i < dataBuffer.length; i++) {
+		for (int i = 0; i < dataUnitSize; i++) {
 			firstNums[i] = dataBuffer[i][bufCurPosPointers[i]];
 		}
 
 		int min = firstNums[0], minSeq = 0;
-		for (int i = 1; i < dataBuffer.length; i++) {
+		for (int i = 1; i < dataUnitSize; i++) {
 			if (min != -1) {
 				if (firstNums[i] < min && firstNums[i] != -1) {
 					min = firstNums[i];
@@ -155,24 +157,29 @@ public class PhaseTwo {
 
 		if (min != -1) {
 			bufCurPosPointers[minSeq]++;
-			if (bufCurPosPointers[minSeq] == numInFileCounterArray[minSeq]) {
-				for (int i = 0; i < dataBuffer.length; i++) {
-					System.out
-							.println("*****file: " + i + " , reach file end, numinbuffer: " + numInFileCounterArray[i]);
-				}
+			sortedNumFromFileCounter[minSeq]++;
+			//System.out.println("minseq:" + minSeq + ",sortednum:" + sortedNumFromFileCounter[minSeq]);
+			if (sortedNumFromFileCounter[minSeq] == numInFileCounterArray[minSeq]) {
 				bufCurPosPointers[minSeq]--;
 				dataBuffer[minSeq][bufCurPosPointers[minSeq]] = -1;
-			} else if (bufCurPosPointers[minSeq] == dataBuffer[0].length && numInFileCounterArray[minSeq] > 0) {
-				System.out.println(dataBuffer[0].length);
-				int leftNum = numInFileCounterArray[minSeq] - dataBuffer[0].length;
-				int readNums = dataBuffer[0].length < leftNum ? dataBuffer[0].length : leftNum;
-				System.out.println("file: " + minSeq + " ,left: " + leftNum);
-				numInFileCounterArray[minSeq] = leftNum;
-				if (readNums > 0) {
-					for (int i = 0; i < readNums; i++) {
+				System.out.println("channel: " + minSeq + " finished, pointer pos: " + bufCurPosPointers[minSeq]);
+			}
+			if (bufCurPosPointers[minSeq] == dataUnitSize) {
+				int unsortedNum = numInFileCounterArray[minSeq] - sortedNumFromFileCounter[minSeq];
+				if (unsortedNum >= dataUnitSize) {
+					for (int i = 0; i < dataUnitSize; i++) {
+						System.out.println("buffer size: " + dataUnitSize + " ,Channel: " + minSeq + ". unsorted num: "
+								+ unsortedNum + " ,totalnum: " + numInFileCounterArray[minSeq]);
 						dataBuffer[minSeq][i] = readOneNum(fileBRs[minSeq]);
-						bufCurPosPointers[minSeq] = 0;
 					}
+					bufCurPosPointers[minSeq] = 0;
+				} else {
+					for (int i = 0; i < unsortedNum; i++) {
+						System.out.println("buffer size: " + dataUnitSize + " ,Channel: " + minSeq + ". unsorted num: "
+								+ unsortedNum + " ,totalnum: " + numInFileCounterArray[minSeq]);
+						dataBuffer[minSeq][i] = readOneNum(fileBRs[minSeq]);						
+					}
+					bufCurPosPointers[minSeq] = 0;
 				}
 			}
 		}
@@ -200,10 +207,12 @@ public class PhaseTwo {
 		int curPos = 0;
 		char curCh;
 		String curNumStr = "";
-		while ((char) (curPos = br.read()) != ' ') {
+		while ((char) (curPos = br.read()) != '\t') {
 			curCh = (char) curPos;
+
 			curNumStr += curCh;
 		}
+		// System.out.println(curNumStr);
 		return Integer.parseInt(curNumStr);
 	}
 

@@ -1,3 +1,9 @@
-/PhaseOne.class
-/PhaseTwo_1.class
+/DataRead.class
+/DataSort.class
+/GenTxt.class
+/MultiwaySortMain.class
 /PhaseTwo.class
+/ReadTxtTest.class
+/.classpath
+/.gitignore
+/TestData/
