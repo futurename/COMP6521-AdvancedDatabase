@@ -15,7 +15,7 @@ import jdk.internal.org.objectweb.asm.tree.IntInsnNode;
 import sun.security.x509.AVA;
 
 public class PhaseTwo {
-	static final int DEFAULT_DATA_BUF_NUM = 3;
+	static final int DEFAULT_DATA_BUF_NUM = 4;
 	static int dataBufNum = DEFAULT_DATA_BUF_NUM;
 	static int totalFreeMemUnits = getFreeMemUnits();
 	static int outputBufUnits = totalFreeMemUnits / 2;
@@ -42,12 +42,12 @@ public class PhaseTwo {
 		while (finalOutputFileNum > 1) {
 			int temItr = finalOutputFileNum / dataBufNum;
 			int itrTimes = finalOutputFileNum % dataBufNum == 0 ? temItr : (temItr + 1);
-			System.out.println("databuf, current round: " + dataBufNum);
-			System.out.println("standard itr time: " + itrTimes);
+			//System.out.println("databuf, current round: " + dataBufNum);
+			//System.out.println("standard itr time: " + itrTimes);
 			int leftFileNum = finalOutputFileNum % dataBufNum;
-			System.out.println("left file num: " + leftFileNum);
+			//System.out.println("left file num: " + leftFileNum);
 			numInFile = new int[totalFileNum];
-			
+
 			for (int i = 0; i < totalFileNum - 1; i++) {
 				numInFile[i] = avgNumInFile;
 			}
@@ -56,18 +56,18 @@ public class PhaseTwo {
 			for (int i = 0; i < itrTimes; i++) {
 				sortedNumInFile = new int[totalFileNum];
 				System.out.println("round time: " + (i + 1));
-				if (i == itrTimes - 1) {
+				if (i == itrTimes - 1 && leftFileNum != 0) {
 					bufUpperLimit = finalOutputFileNum % dataBufNum == 0 ? dataBufNum : finalOutputFileNum % dataBufNum;
-				}else {
+				} else {
 					bufUpperLimit = dataBufNum;
 				}
 				System.out.println("Buffer upper limit: " + bufUpperLimit);
-				initReadFile(fileName, bufUpperLimit, dataBufUnitSize, numInFile);	
+				initReadFile(fileName, bufUpperLimit, dataBufUnitSize, numInFile);
 				outputFileCounter++;
-				
+
 				System.out.println("Sorted num: " + totalSortedNum);
 				totalSortedNum = 0;
-				}			
+			}
 			fileName = phaseTwoFilename;
 			phaseTwoFilename += "x_";
 			finalOutputFileNum = outputFileCounter;
@@ -75,8 +75,10 @@ public class PhaseTwo {
 			totalFileNum = finalOutputFileNum;
 			inputFileCounter = 0;
 			outputFileCounter = 0;
+			int temAvg = avgNumInFile;
 			avgNumInFile = avgNumInFile * dataBufNum;
-			lastNumInFile = avgNumInFile * (leftFileNum - 1) + lastNumInFile;
+			lastNumInFile = temAvg * ((leftFileNum - 1 == 0 ? (dataBufNum - 1): leftFileNum - 1)) + lastNumInFile;
+			System.out.println("avanum: " + avgNumInFile + " , lastNum:" + lastNumInFile);
 		}
 	}
 
@@ -122,16 +124,17 @@ public class PhaseTwo {
 
 				if (outputBufCounter == outputBufUnits) {
 					String outputFilename = phaseTwoFilename + outputFileCounter;
-					//totalSortedNum += outputBufCounter;
-					 System.out.println("totalsortednum written to file(full): " + totalSortedNum + " ,min: " + curMin);
+					// totalSortedNum += outputBufCounter;
+					System.out.println("totalsortednum written to file(full): " + totalSortedNum + " ,min: " + curMin);
 					// totalSortedNum);
 					writeToFile(outputFilename, outputBuffer);
-					outputBufCounter = 0;					
+					outputBufCounter = 0;
 				}
 			} else {
 				String outputFilename = phaseTwoFilename + outputFileCounter;
-				//totalSortedNum += outputBufCounter;
-				 System.out.println("totalsortednum written to file(last, unfull): " + totalSortedNum + " ,min: " + curMin);
+				// totalSortedNum += outputBufCounter;
+				System.out.println(
+						"totalsortednum written to file(last, unfull): " + totalSortedNum + " ,min: " + curMin);
 				// totalSortedNum);
 				writeToFile(outputFilename, outputBuffer);
 				outputBufCounter = 0;
@@ -161,7 +164,8 @@ public class PhaseTwo {
 
 		for (int i = 0; i < bufUpperLimit; i++) {
 			firstNums[i] = dataBuffer[i][bufCurPosPointers[i]];
-			 //System.out.println("channel: " + i + ",curpos: " + bufCurPosPointers[i] + "num: " + firstNums[i]);
+			// System.out.println("channel: " + i + ",curpos: " + bufCurPosPointers[i] +
+			// "num: " + firstNums[i]);
 		}
 
 		int min = firstNums[0], minSeq = 0;
@@ -183,8 +187,7 @@ public class PhaseTwo {
 			bufCurPosPointers[minSeq]++;
 			// System.out.println("channel: " + minSeq + ",curpos will ++ to: " +
 			// bufCurPosPointers[minSeq]);
-			// System.out.println("sortednum: " + sortedNumInFile[minSeq] + ",numInfile: " +
-			// numInThisFile[minSeq]);
+			//System.out.println("channel: " + minSeq + ", sortednum: " + sortedNumInFile[minSeq] + ",numInfile: " + numInThisFile[minSeq]);
 			sortedNumInFile[minSeq]++;
 			// System.out.println("minseq:" + minSeq + ",sortednum:" +
 			// sortedNumFromFileCounter[minSeq]);
