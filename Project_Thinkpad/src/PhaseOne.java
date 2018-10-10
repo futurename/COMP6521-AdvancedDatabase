@@ -22,6 +22,10 @@ public class PhaseOne {
 		BufferedReader bReader = new BufferedReader(fReader);		
 		String[] headers = bReader.readLine().split("\\s+");
 		int totalNumbers = Integer.parseInt(headers[0]);
+		int memRestric = Integer.parseInt(headers[1].charAt(0) + "");
+		if(memRestric == 2) {
+			MultiwaySortMain.DEFAULT_MEM_RATE = 0.1;
+		}
 		avgCountInPhaseOneFile = numOfInt;
 		lastCountInPhaseOneFile = totalNumbers % numOfInt;		
 		MultiwaySortMain.totalNumberValue = totalNumbers;

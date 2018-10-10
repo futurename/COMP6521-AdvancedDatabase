@@ -4,7 +4,7 @@ import java.util.Scanner;*/
 
 
 public class MultiwaySortMain {
-	public final static double DEFAULT_MEM_RATE = 0.4;
+	public static double DEFAULT_MEM_RATE = 0.4;
 	private final static String DEFAULT_TXT_PATH = "./TestData/input_1.txt";	
 	final static String DEFAULT_TEMP_DATA_DIR = "./TestData/temp/";	
 	static int totalNumberValue;
@@ -29,9 +29,10 @@ public class MultiwaySortMain {
 		Long phaseoneEndTime = System.currentTimeMillis();
 		long phaseoneTimeUsed = phaseoneEndTime - phaseoneStartTime;
 		System.out.println("Phase one, time used: " + phaseoneTimeUsed + " ms\n");
-		
+		System.gc();
 		long phasetwoStartTime = System.currentTimeMillis();		
 		PhaseTwo.phaseTwoMain();
+		
 		long phasetwoEndTime = System.currentTimeMillis();
 		long phasetwoTimeUsed = phasetwoEndTime - phasetwoStartTime;
 		System.out.println("Phase two, time used: " + phasetwoTimeUsed + " ms\n");
