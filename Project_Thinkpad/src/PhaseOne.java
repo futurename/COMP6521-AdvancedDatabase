@@ -49,9 +49,11 @@ public class PhaseOne {
 					sortedNumCounter += bufferCount;
 					//System.out.println("output numbers: " + bufferCount);
 					bufferCount = 0;
+					
 				}				
 			}			
-		}
+		}		
+		
 		String filePrefix = phaseOneFilePrefix + fileNumCounter;
 		fileNumCounter++;
 		DataSort.sort(buffer,0,bufferCount-1);

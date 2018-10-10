@@ -15,7 +15,7 @@ import jdk.internal.org.objectweb.asm.tree.IntInsnNode;
 import sun.security.x509.AVA;
 
 public class PhaseTwo {
-	static final int DEFAULT_DATA_BUF_NUM = 4;
+	static final int DEFAULT_DATA_BUF_NUM = 5;
 	static int dataBufNum = DEFAULT_DATA_BUF_NUM;
 	static int totalFreeMemUnits = getFreeMemUnits();
 	static int outputBufUnits = totalFreeMemUnits / 2;
@@ -55,7 +55,7 @@ public class PhaseTwo {
 
 			for (int i = 0; i < itrTimes; i++) {
 				sortedNumInFile = new int[totalFileNum];
-				System.out.println("round time: " + (i + 1));
+				//System.out.println("round time: " + (i + 1));
 				if (i == itrTimes - 1 && leftFileNum != 0) {
 					bufUpperLimit = finalOutputFileNum % dataBufNum == 0 ? dataBufNum : finalOutputFileNum % dataBufNum;
 				} else {
@@ -65,7 +65,7 @@ public class PhaseTwo {
 				initReadFile(fileName, bufUpperLimit, dataBufUnitSize, numInFile);
 				outputFileCounter++;
 
-				System.out.println("Sorted num: " + totalSortedNum);
+				//System.out.println("Sorted num: " + totalSortedNum);
 				totalSortedNum = 0;
 			}
 			fileName = phaseTwoFilename;
@@ -136,7 +136,11 @@ public class PhaseTwo {
 				System.out.println(
 						"totalsortednum written to file(last, unfull): " + totalSortedNum + " ,min: " + curMin);
 				// totalSortedNum);
-				writeToFile(outputFilename, outputBuffer);
+				int[] finalBuf = new int[outputBufCounter];
+				for(int i = 0; i< outputBufCounter;i++) {
+					finalBuf[i]= outputBuffer[i]; 
+				}
+				writeToFile(outputFilename, finalBuf);
 				outputBufCounter = 0;
 				isAllSorted = true;
 			}
