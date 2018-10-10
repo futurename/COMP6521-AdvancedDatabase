@@ -15,7 +15,7 @@ import jdk.internal.org.objectweb.asm.tree.IntInsnNode;
 import sun.security.x509.AVA;
 
 public class PhaseTwo {
-	static final int DEFAULT_DATA_BUF_NUM = 5;
+	static final int DEFAULT_DATA_BUF_NUM = 3;
 	static int dataBufNum = DEFAULT_DATA_BUF_NUM;
 	static int totalFreeMemUnits = getFreeMemUnits();
 	static int outputBufUnits = totalFreeMemUnits / 2;
@@ -72,6 +72,7 @@ public class PhaseTwo {
 			phaseTwoFilename += "x_";
 			finalOutputFileNum = outputFileCounter;
 			fileNumConter = finalOutputFileNum;
+			totalFileNum = finalOutputFileNum;
 			inputFileCounter = 0;
 			outputFileCounter = 0;
 			avgNumInFile = avgNumInFile * dataBufNum;
