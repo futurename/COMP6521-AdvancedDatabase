@@ -15,7 +15,7 @@ import jdk.internal.org.objectweb.asm.tree.IntInsnNode;
 import sun.security.x509.AVA;
 
 public class PhaseTwo {
-	static final int DEFAULT_DATA_BUF_NUM = 5;
+	static final int DEFAULT_DATA_BUF_NUM = PhaseOne.phaseOneFileNum < 7 ? PhaseOne.phaseOneFileNum : 7;
 	static int dataBufNum = DEFAULT_DATA_BUF_NUM;
 	static int totalFreeMemUnits = getFreeMemUnits();
 	static int outputBufUnits = totalFreeMemUnits / 2;
@@ -37,7 +37,7 @@ public class PhaseTwo {
 
 	static void phaseTwoMain() throws IOException {
 		int finalOutputFileNum = totalFileNum;
-		System.out.println("Freemenunits: " + totalFreeMemUnits);
+		//System.out.println("Freemenunits: " + totalFreeMemUnits);
 
 		while (finalOutputFileNum > 1) {
 			int temItr = finalOutputFileNum / dataBufNum;
@@ -61,7 +61,7 @@ public class PhaseTwo {
 				} else {
 					bufUpperLimit = dataBufNum;
 				}
-				System.out.println("Buffer upper limit: " + bufUpperLimit);
+				//System.out.println("Buffer upper limit: " + bufUpperLimit);
 				initReadFile(fileName, bufUpperLimit, dataBufUnitSize, numInFile);
 				outputFileCounter++;
 
@@ -79,8 +79,8 @@ public class PhaseTwo {
 			int temAvg = avgNumInFile;
 			avgNumInFile = avgNumInFile * dataBufNum;
 			lastNumInFile = temAvg * ((leftFileNum - 1 == 0 ? (dataBufNum - 1): leftFileNum - 1)) + lastNumInFile;
-			System.out.println("avanum: " + avgNumInFile + " , lastNum:" + lastNumInFile);
-			System.out.println("total sorted: " + totalSortedNumCounter);
+			//System.out.println("avanum: " + avgNumInFile + " , lastNum:" + lastNumInFile);
+			//System.out.println("total sorted: " + totalSortedNumCounter);
 		}
 	}
 
@@ -97,8 +97,8 @@ public class PhaseTwo {
 			files[i] = new File(curFilename);
 			fileFRs[i] = new FileReader(files[i]);
 			fileBRs[i] = new BufferedReader(fileFRs[i]);
-			System.out.println("Totalfilenum: " + fileNumConter);
-			System.out.println("Read from file " + curFilename);
+			//System.out.println("Totalfilenum: " + fileNumConter);
+			//System.out.println("Read from file " + curFilename);
 			for (int j = 0; j < dataBufUnitSize; j++) {
 				dataBuffer[i][j] = readOneNum(fileBRs[i]);
 				// System.out.println("reading i: " + i + " , j:" + j);
@@ -127,7 +127,7 @@ public class PhaseTwo {
 				if (outputBufCounter == outputBufUnits) {
 					String outputFilename = phaseTwoFilename + outputFileCounter;
 					// totalSortedNum += outputBufCounter;
-					System.out.println("totalsortednum written to file(full): " + totalSortedNum + " ,sorted: " + totalSortedNum);
+					//System.out.println("totalsortednum written to file(full): " + totalSortedNum + " ,sorted: " + totalSortedNum);
 					// totalSortedNum);
 					writeToFile(outputFilename, outputBuffer);
 					outputBufCounter = 0;
@@ -135,8 +135,8 @@ public class PhaseTwo {
 			} else {
 				String outputFilename = phaseTwoFilename + outputFileCounter;
 				// totalSortedNum += outputBufCounter;
-				System.out.println(
-						"totalsortednum written to file(last, unfull): " + totalSortedNum + " ,sorted: " + totalSortedNum);
+				//System.out.println(
+						//"totalsortednum written to file(last, unfull): " + totalSortedNum + " ,sorted: " + totalSortedNum);
 				// totalSortedNum);
 				int[] finalBuf = new int[outputBufCounter];
 				for(int i = 0; i< outputBufCounter;i++) {
@@ -151,7 +151,7 @@ public class PhaseTwo {
 
 	static void writeToFile(String outputFilename, int[] outputBufdata) throws IOException {
 		String curOutputFilename = outputFilename + SUFFIX;
-		System.out.println("-----------------output file: " + curOutputFilename);
+		//System.out.println("-----------------output file: " + curOutputFilename);
 		File fw = new File(curOutputFilename);
 		FileWriter fWriter = new FileWriter(fw, true);
 		BufferedWriter bWriter = new BufferedWriter(fWriter);

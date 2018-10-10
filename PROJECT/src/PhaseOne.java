@@ -25,7 +25,7 @@ public class PhaseOne {
 		avgCountInPhaseOneFile = numOfInt;
 		lastCountInPhaseOneFile = totalNumbers % numOfInt;		
 		MultiwaySortMain.totalNumberValue = totalNumbers;
-		System.out.println("init total numbers: " + totalNumbers + " , Memeory restriction: " + headers[1]);		
+		//System.out.println("init total numbers: " + totalNumbers + " , Memeory restriction: " + headers[1]);		
 		bReader.readLine();
 
 		int curPos = 0;
@@ -49,15 +49,17 @@ public class PhaseOne {
 					sortedNumCounter += bufferCount;
 					//System.out.println("output numbers: " + bufferCount);
 					bufferCount = 0;
+					
 				}				
 			}			
-		}
+		}		
+		
 		String filePrefix = phaseOneFilePrefix + fileNumCounter;
 		fileNumCounter++;
 		DataSort.sort(buffer,0,bufferCount-1);
 		writeBufferToFile(buffer, filePrefix);		
 		sortedNumCounter += bufferCount;		
-		System.out.println("total sorted nums in Phase one: " + sortedNumCounter);
+		//System.out.println("total sorted nums in Phase one: " + sortedNumCounter);
 		bReader.close();
 		phaseOneFileNum = fileNumCounter;
 	}

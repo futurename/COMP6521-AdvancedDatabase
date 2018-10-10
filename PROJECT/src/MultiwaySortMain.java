@@ -4,8 +4,8 @@ import java.util.Scanner;*/
 
 
 public class MultiwaySortMain {
-	private final static double DEFAULT_MEM_RATE = 0.4;
-	private final static String DEFAULT_TXT_PATH = "./TestData/input_1.txt";	
+	public final static double DEFAULT_MEM_RATE = 0.4;
+	private final static String DEFAULT_TXT_PATH = "./TestData/data10.txt";	
 	final static String DEFAULT_TEMP_DATA_DIR = "./TestData/temp/";	
 	static int totalNumberValue;
 	

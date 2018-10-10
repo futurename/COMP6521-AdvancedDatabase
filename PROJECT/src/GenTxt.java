@@ -3,8 +3,8 @@ import java.util.Random;
 
 public class GenTxt {
 
-    final static int numberToBeGen = 1000000;
-    final static String pathname = "./TestData/data1.txt";
+    final static int numberToBeGen = 10000000;
+    final static String pathname = "./TestData/data10.txt";
 
     public static void main(String[] args) throws IOException {
                 

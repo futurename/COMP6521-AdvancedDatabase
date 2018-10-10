@@ -3,8 +3,8 @@ import java.util.Random;
 
 public class GenTxt {
 
-    final static int numberToBeGen = 1000000;
-    final static String pathname = "./TestData/data1.txt";
+    final static int numberToBeGen = 10000000;
+    final static String pathname = "./TestData/data10.txt";
 
     public static void main(String[] args) throws IOException {
                 
@@ -24,7 +24,6 @@ public class GenTxt {
         else{
         	String firstLine = numToGen + "\t5m";
         	out.write(firstLine);
-        	out.newLine();
         	out.newLine();
             Random rand = new Random();
             //int length = (int) Math.log10(numToGen);
