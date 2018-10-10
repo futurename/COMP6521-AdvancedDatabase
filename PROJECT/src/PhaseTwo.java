@@ -157,7 +157,7 @@ public class PhaseTwo {
 
 		if (min != -1) {
 			bufCurPosPointers[minSeq]++;
-			sortedNumFromFileCounter[minSeq]++;
+			//sortedNumFromFileCounter[minSeq]++;
 			//System.out.println("minseq:" + minSeq + ",sortednum:" + sortedNumFromFileCounter[minSeq]);
 			if (sortedNumFromFileCounter[minSeq] == numInFileCounterArray[minSeq]) {
 				bufCurPosPointers[minSeq]--;
