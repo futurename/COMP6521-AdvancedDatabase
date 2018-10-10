@@ -15,7 +15,7 @@ import jdk.internal.org.objectweb.asm.tree.IntInsnNode;
 import sun.security.x509.AVA;
 
 public class PhaseTwo {
-	static final int DEFAULT_DATA_BUF_NUM = PhaseOne.phaseOneFileNum < 7 ? PhaseOne.phaseOneFileNum : 7;
+	static final int DEFAULT_DATA_BUF_NUM = PhaseOne.phaseOneFileNum < 7 ? PhaseOne.phaseOneFileNum : 7;;
 	static int dataBufNum = DEFAULT_DATA_BUF_NUM;
 	static int totalFreeMemUnits = getFreeMemUnits();
 	static int outputBufUnits = totalFreeMemUnits / 2;
@@ -69,6 +69,11 @@ public class PhaseTwo {
 				totalSortedNumCounter = totalSortedNum;
 				totalSortedNum = 0;
 			}
+			if(leftFileNum == 1) {
+				File oldFile = new File(fileName + outputFileCounter + SUFFIX);
+				File newFile = new File(phaseTwoFilename + outputFileCounter + SUFFIX);
+				oldFile.renameTo(newFile);
+			}
 			fileName = phaseTwoFilename;
 			phaseTwoFilename += "x_";
 			finalOutputFileNum = outputFileCounter;
@@ -78,7 +83,7 @@ public class PhaseTwo {
 			outputFileCounter = 0;
 			int temAvg = avgNumInFile;
 			avgNumInFile = avgNumInFile * dataBufNum;
-			lastNumInFile = temAvg * ((leftFileNum - 1 == 0 ? (dataBufNum - 1): leftFileNum - 1)) + lastNumInFile;
+			lastNumInFile = temAvg * ((leftFileNum == 0 ? (dataBufNum - 1): (leftFileNum - 1))) + lastNumInFile;
 			//System.out.println("avanum: " + avgNumInFile + " , lastNum:" + lastNumInFile);
 			//System.out.println("total sorted: " + totalSortedNumCounter);
 		}
