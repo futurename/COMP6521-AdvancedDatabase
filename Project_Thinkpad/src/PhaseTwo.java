@@ -66,6 +66,7 @@ public class PhaseTwo {
 				outputFileCounter++;
 
 				//System.out.println("Sorted num: " + totalSortedNum);
+				totalSortedNumCounter = totalSortedNum;
 				totalSortedNum = 0;
 			}
 			fileName = phaseTwoFilename;
@@ -79,6 +80,7 @@ public class PhaseTwo {
 			avgNumInFile = avgNumInFile * dataBufNum;
 			lastNumInFile = temAvg * ((leftFileNum - 1 == 0 ? (dataBufNum - 1): leftFileNum - 1)) + lastNumInFile;
 			System.out.println("avanum: " + avgNumInFile + " , lastNum:" + lastNumInFile);
+			System.out.println("total sorted: " + totalSortedNumCounter);
 		}
 	}
 
@@ -121,11 +123,11 @@ public class PhaseTwo {
 			int curMin = getMinNumPos(dataBuffer, bufCurPosPointers, fileBRs, numInThisFile);
 			if (curMin != -1) {
 				outputBuffer[outputBufCounter++] = curMin;
-
+				totalSortedNum++;
 				if (outputBufCounter == outputBufUnits) {
 					String outputFilename = phaseTwoFilename + outputFileCounter;
 					// totalSortedNum += outputBufCounter;
-					System.out.println("totalsortednum written to file(full): " + totalSortedNum + " ,min: " + curMin);
+					System.out.println("totalsortednum written to file(full): " + totalSortedNum + " ,sorted: " + totalSortedNum);
 					// totalSortedNum);
 					writeToFile(outputFilename, outputBuffer);
 					outputBufCounter = 0;
@@ -134,7 +136,7 @@ public class PhaseTwo {
 				String outputFilename = phaseTwoFilename + outputFileCounter;
 				// totalSortedNum += outputBufCounter;
 				System.out.println(
-						"totalsortednum written to file(last, unfull): " + totalSortedNum + " ,min: " + curMin);
+						"totalsortednum written to file(last, unfull): " + totalSortedNum + " ,sorted: " + totalSortedNum);
 				// totalSortedNum);
 				int[] finalBuf = new int[outputBufCounter];
 				for(int i = 0; i< outputBufCounter;i++) {
